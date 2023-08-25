@@ -18,7 +18,7 @@
 
 效果预览
 
-![image-20230825152114069](C:/Users/wu/AppData/Roaming/Typora/typora-user-images/image-20230825152114069.png)
+![preview](preview.png)
 
 ## 注意：概不负责
 
