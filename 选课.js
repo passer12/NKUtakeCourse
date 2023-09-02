@@ -1,6 +1,7 @@
 const lessonId2CountsUrl = 'https://eamis.nankai.edu.cn/eams/stdElectCourse!queryStdCount.action?projectId=1&semesterId=4263'
+//注意修改semesterId,可从开发者模式网络标签发送的请求网址得到，或别的什么地方
 //加载lessonId2Counts变量的URl
-let lessonNo = NO1
+let lessonNo = NO
 //选课课号 
 let deleteNo = null
 //退课课号
@@ -10,7 +11,7 @@ let checkInterval = []
 //根据课号获取信息
 const getInfo = (lessonNo,isTake) => {
     let lesson = lessonJSONs.filter(lesson=>lesson.no==lessonNo)
-    let url = "/eams/stdElectCourse!batchOperator.action?profileId=1351";//不同阶段选课profileid不同，注意修改
+    let url = "/eams/stdElectCourse!batchOperator.action?profileId=1357";//不同阶段选课profileid不同，注意修改
     let eLG = lesson[0].expLessonGroups[0]?lesson[0].expLessonGroups[0].id:undefined
     let data
     //take or quit
@@ -24,7 +25,7 @@ const getInfo = (lessonNo,isTake) => {
 }
 let info = getInfo(lessonNo,true) 
 let deleteinfo = getInfo(deleteNo,false)
-
+let reverseinfo = getInfo(deleteNo,true)
 var success = (data, status, xhr) => {
 // 在这里处理响应数据
     console.log(data.match(/[\u4e00-\u9fa5]+/g));
@@ -61,47 +62,23 @@ const reversedCheck = () => {
     let counts = lessonId2Counts[info.lesson[0].id]
     console.log(counts)
     if(counts.sc<counts.lc){
-        // startDelete()
-        // setTimeout(()=>{$.post(info.url, info.data, success)}, 1000);
-        //鉴于抢别人交换的课属实恶毒，且易被怀疑脚本，禁止使用，建议通过发送短信的方法手动进行选课
-        //或者调整检测周期，至少5分钟一次以避免抢到
-        //TODO 发送短信
+        startDelete()
+        setTimeout(()=>{$.post(info.url, info.data, success)}, 1000);
+        setTimeout(()=>{$.post(reverseinfo.url, reverseinfo.data, success)}, 1000);
+        console.log('有余')
     }
 }
 //检查是否有课余量
 const startCheck = ()=>{
-    let id1 = setInterval(reversedCheck, 4000);
-    let id2 = setInterval(()=>{console.log(`running well at time:${new Date()}`)},10000)
+    let id1 = setInterval(reversedCheck, 60000);//防止抢到别人交换的课，也防止被发现使用脚本，时间间隔请放大点，目前是一分钟。
+    let id2 = setInterval(()=>{console.log(`running well at time:${new Date()}`)},60000)
     checkInterval.push(id1)
     checkInterval.push(id2)
     console.log('start check')
 }
+//stop
 const stopCheck = () => {
     checkInterval.forEach(id=>clearInterval(id))
     checkInterval = []
     console.log('stop Check')
 }
-
-
-
-// let lessonNo = "0913"
-// let lesson = lessonJSONs.filter(lesson=>lesson.no==lessonNo)
-// var url = "/eams/stdElectCourse!batchOperator.action?profileId=1351";
-// let eLG = lesson[0].expLessonGroups[0]?lesson[0].expLessonGroups[0].id:undefined
-// let data = `optype=false&operator0=${lesson[0].id}%3Afalse&lesson0=${lesson[0].id}`;
-// let intervalId
-// var success = (data, status, xhr) => {
-// // 在这里处理响应数据
-// console.log(data.match(/[\u4e00-\u9fa5]+/g));
-// };
-
-// // 使用 jQuery 的 post 函数发送请求
-// const start = () => {
-//     intervalId = setInterval(() => {$.post(url, data, success)},1000)
-//     console.log('start')
-// }
-// const stop = () => {
-//     clearInterval(intervalId)
-//     console.log('stop')
-// }
-// start()
