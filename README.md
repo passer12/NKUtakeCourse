@@ -1,4 +1,4 @@
-# NKUtakeCourse
+# NKUtakeCourse 南开选课
 
 南开大学选课js脚本
 
